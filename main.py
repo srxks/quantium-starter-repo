@@ -4,7 +4,7 @@ import pandas as pd
 x = open("data/daily_sales_data_0.csv")
 y = open("data/daily_sales_data_1.csv")
 z = open("data/daily_sales_data_2.csv")
-j = open("data/final.csv", mode="w+", newline="")
+j = open("final.csv", mode="w+", newline="")
 
 
 a = csv.DictReader(x, delimiter=",")
