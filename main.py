@@ -1,29 +1,39 @@
-import csv
 import pandas as pd
+from dash import Dash, html, dcc
+import plotly.express as px
 
-x = open("data/daily_sales_data_0.csv")
-y = open("data/daily_sales_data_1.csv")
-z = open("data/daily_sales_data_2.csv")
-j = open("final.csv", mode="w+", newline="")
+# Read CSV
+df = pd.read_csv("final.csv")
 
+# Clean data
+df["sales"] = (
+    df["sales"]
+    .str.replace("$", "", regex=False)
+    .astype(float)
+)
 
-a = csv.DictReader(x, delimiter=",")
-b = csv.DictReader(y, delimiter=",")
-c = csv.DictReader(z, delimiter=",")
-d = csv.DictWriter(j, delimiter=",", fieldnames=["sales", "date", "region"])
-d.writeheader()
+df["date"] = pd.to_datetime(df["date"])
 
-for i in a:
-    if i["product"] == "pink morsel":
-        h = "$" + str(float(i["price"][1:])*float(i["quantity"]))
-        d.writerow({"sales":h, "date":i["date"], "region":i["region"]})
+# Create chart
+fig = px.line(
+    df,
+    x="date",
+    y="sales",
+    color="region",
+    title="Sales vs Date by Region",
+    markers=True
+)
 
-for i in b:
-    if i["product"] == "pink morsel":
-        h = "$" + str(float(i["price"][1:])*float(i["quantity"]))
-        d.writerow({"sales":h, "date":i["date"], "region":i["region"]})
+# Dash app
+app = Dash(__name__)
 
-for i in c:
-    if i["product"] == "pink morsel":
-        h = "$" + str(float(i["price"][1:])*float(i["quantity"]))
-        d.writerow({"sales":h, "date":i["date"], "region":i["region"]})
+app.layout = html.Div([
+    html.H1("Sales Dashboard"),
+
+    dcc.Graph(
+        figure=fig
+    )
+])
+
+if __name__ == "__main__":
+    app.run(debug=True)
